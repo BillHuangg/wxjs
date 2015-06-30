@@ -13,11 +13,11 @@ class JSSDK {
 
     // 注意 URL 一定要动态获取，不能 hardcode.
     // this can only get php url, not the request url
-    // $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-    // $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
     // set url 
-    $url = $_SERVER["HTTP_REFERER"];
+    // $url = $_SERVER["HTTP_REFERER"];
 
     $timestamp = time();
     $nonceStr = $this->createNonceStr();
@@ -36,7 +36,7 @@ class JSSDK {
       "signature" => $signature,
       "rawString" => $string
       );
-    return $signPackage; 
+    return $signPackage;
   }
 
   private function createNonceStr($length = 16) {
@@ -52,6 +52,10 @@ class JSSDK {
     // jsapi_ticket 应该全局存储与更新，以下代码以写入到文件中做示例
     $data = json_decode(file_get_contents("jsapi_ticket.json"));
     if ($data->expire_time < time()) {
+
+      echo "get jsapi_ticket from request";
+      echo "<br>";
+
       $accessToken = $this->getAccessToken();
       // 如果是企业号用以下 URL 获取 ticket
       // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
@@ -66,6 +70,8 @@ class JSSDK {
         fclose($fp);
       }
     } else {
+      echo "get jsapi_ticket from json";
+      echo "<br>";
       $ticket = $data->jsapi_ticket;
     }
 
